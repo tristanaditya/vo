@@ -24,14 +24,14 @@ def save_warns():
         json.dump(warns, f, indent=4)
 
 TICKET_PANEL_CHANNEL_ID = 1434769506798010480
-TICKET_LOG_CHANNEL_ID = 1443655135179047052
+TICKET_LOG_CHANNEL_ID = 1452681875029102624
 STAFF_ROLE_ID = 1434818807368519755
 TICKET_CATEGORY_ID = 1434818160577609840
 
 TICKET_PANEL_CHANNEL_ID_X8 = 1443956687433105479
 TICKET_CATEGORY_ID_X8 = 1443965063533953104
 
-UNVERIFIED_ROLE_ID = 1443627247809335429
+UNVERIFIED_ROLE_ID = 1434816903439843359
 MEMBER_ROLE_ID = 1434816903439843359
 
 VORA_BLUE = 0x3498db
@@ -71,12 +71,12 @@ ticket_count = max(active_tickets.values(), default=0)
 # ---------------------------
 # EMBEDS
 # ---------------------------
-async def send_ticket_panel(bot: dc.Bot, panel_type="all"):
+async def send_ticket_panel(bot: commands.Bot, panel_type="all"):
     panels = []
     if panel_type in ["all", "biasa"]:
         panels.append({
             "channel_id": TICKET_PANEL_CHANNEL_ID,
-            "message_id": 1443794786615296092,
+            "message_id": 1455913063520932033,
             "embed": dc.Embed(title="🎫 Ticket Vora Hub", description=TICKET_BIASA_DESC, color=VORA_BLUE),
             "view": TicketPanelButtons()
         })
@@ -274,7 +274,7 @@ async def create_ticket(interaction: Interaction, category_name: str):
     category_id = TICKET_CATEGORY_ID_X8 if "x8" in category_name.lower() else TICKET_CATEGORY_ID
     category = guild.get_channel(category_id)
     staff_role = guild.get_role(STAFF_ROLE_ID)
-    channel_name = f"{'x8-' if 'x8' in category_name.lower() else ''}ticket-{user.name.lower()}-{ticket_count:04}"
+    channel_name = f"{'x8-' if 'x8' in category_name.lower() else ''}ticket-{ticket_count:04}"
 
     ticket_channel = await guild.create_text_channel(
         name=channel_name,
@@ -385,7 +385,7 @@ class Client(commands.Bot):
         {
             "name": "Ticket Biasa",
             "channel_id": TICKET_PANEL_CHANNEL_ID,
-            "message_id": 1443794786615296092,
+            "message_id": 1455917081068437667,
             "embed": dc.Embed(
                 title="🎫 Ticket Vora Hub",
                 description=TICKET_BIASA_DESC,
@@ -897,5 +897,11 @@ async def remove_user(interaction: dc.Interaction, user: dc.Member):
         ephemeral=False
     )
 
+from dotenv import load_dotenv
+import os
 
-client.run('MTQ0MjkyMzg5MDU4MTA0NTM4MQ.GJB01k.qXosVQDWk7Z7eO5aPy_BKOhEkOJajdPEONBtRY')
+load_dotenv()
+
+TOKEN = os.getenv("DISCORD_TOKEN")
+
+client.run(TOKEN)
