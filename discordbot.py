@@ -9,6 +9,7 @@ from discord.ext import commands
 from discord import app_commands
 from discord import ui, Interaction, ButtonStyle, Embed
 from PIL import Image, ImageDraw, ImageFont
+from typing import Literal
 
 
 WARN_FILE = "warns.json"
@@ -758,8 +759,16 @@ async def untimeout(interaction: dc.Interaction, member: dc.Member):
     except Exception as e:
         await interaction.response.send_message(f"Failed to remove timeout. Error: {e}", ephemeral=True)
 
-@client.tree.command(name="changelog", description="Send VoraHub changelog embed.")
-async def changelog(interaction: dc.Interaction, game: str, message: str):
+@client.tree.command(
+    name="changelog",
+    description="Send VoraHub changelog embed."
+)
+async def changelog(
+    interaction: dc.Interaction,
+    game: str,
+    tier: Literal["Free", "Premium"],
+    message: str
+):
     CHANGELOG_CHANNEL_ID = 1434555092383563777
     BUGREPORT_CHANNEL_ID = 1434769709928284232
     TAG_ID = 1434816903439843359
@@ -770,31 +779,44 @@ async def changelog(interaction: dc.Interaction, game: str, message: str):
             "❌ Changelog channel not found in this server.",
             ephemeral=True
         )
-
+    
     lines = [line.strip() for line in message.split("|") if line.strip()]
 
     diff_block = "```diff\n"
     for line in lines:
         if line.startswith("+") or line.startswith("-"):
-            diff_block += f"{line}\n"  # + atau - tetap di baris baru
+            diff_block += f"{line}\n"
         else:
-            diff_block += f"+ {line}\n"  # baris biasa jadi + di depan
+            diff_block += f"+ {line}\n"
     diff_block += "```"
 
-    VORAHUB_BLUE = dc.Color.from_rgb(0, 136, 255)
+    if tier == "Premium":
+        tier_text = "**[VoraHub Premium]**"
+        embed_color = dc.Color.from_rgb(0, 136, 255)
+        tag_message = f"<@&{TAG_ID}>"
+    else:
+        tier_text = "**[VoraHub Free]**"
+        embed_color = dc.Color.from_rgb(150, 150, 150)
+        tag_message = None
 
     embed = dc.Embed(
         title="VoraHub Has Been Updated",
-        description=f"**[VoraHub Premium]**\n**ChangeLogs — {game}**",
-        color=VORAHUB_BLUE
+        description=f"{tier_text}\n**ChangeLogs — {game}**",
+        color=embed_color
     )
-    embed.add_field(name="", value=diff_block, inline=False)
+
+    embed.add_field(
+        name="",
+        value=diff_block,
+        inline=False
+    )
+
     embed.add_field(
         name="",
         value=(
             f"**Please re-execute VoraHub**, and use the newest version.\n"
             f"Found a bug? Report it on <#{BUGREPORT_CHANNEL_ID}>\n\n"
-            "💙 Thank you for using **VoraHub Premium** 💙"
+            f"💙 Thank you for using **VoraHub {tier}** 💙"
         ),
         inline=False
     )
@@ -806,10 +828,13 @@ async def changelog(interaction: dc.Interaction, game: str, message: str):
 
     embed.set_footer(text="VoraHub Official Update • © 2025")
 
-    await changelog_channel.send(f"<@&{TAG_ID}>", embed=embed)
+    if tag_message:
+        await changelog_channel.send(tag_message, embed=embed)
+    else:
+        await changelog_channel.send(embed=embed)
 
     await interaction.response.send_message(
-        f"✅ Changelog untuk **{game}** telah dikirim ke <#{CHANGELOG_CHANNEL_ID}> dan men-tag <@&{TAG_ID}>.",
+        f"✅ Changelog **{tier}** untuk **{game}** berhasil dikirim ke <#{CHANGELOG_CHANNEL_ID}>.",
         ephemeral=True
     )
 
