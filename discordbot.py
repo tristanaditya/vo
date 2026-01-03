@@ -769,6 +769,13 @@ async def changelog(
     tier: Literal["Free", "Premium"],
     message: str
 ):
+
+    if not interaction.user.guild_permissions.administrator:
+        return await interaction.response.send_message(
+            "❌ Command ini **khusus Admin saja**.",
+            ephemeral=True
+        )
+
     CHANGELOG_CHANNEL_ID = 1434555092383563777
     BUGREPORT_CHANNEL_ID = 1434769709928284232
     TAG_ID = 1434816903439843359
@@ -779,7 +786,7 @@ async def changelog(
             "❌ Changelog channel not found in this server.",
             ephemeral=True
         )
-    
+
     lines = [line.strip() for line in message.split("|") if line.strip()]
 
     diff_block = "```diff\n"
@@ -796,8 +803,8 @@ async def changelog(
         tag_message = f"<@&{TAG_ID}>"
     else:
         tier_text = "**[VoraHub Free]**"
-        embed_color = dc.Color.from_rgb(150, 150, 150)
-        tag_message = None
+        embed_color = dc.Color.from_rgb(0, 136, 255)
+        tag_message = f"<@&{TAG_ID}>"
 
     embed = dc.Embed(
         title="VoraHub Has Been Updated",
@@ -828,10 +835,7 @@ async def changelog(
 
     embed.set_footer(text="VoraHub Official Update • © 2025")
 
-    if tag_message:
-        await changelog_channel.send(tag_message, embed=embed)
-    else:
-        await changelog_channel.send(embed=embed)
+    await changelog_channel.send(tag_message, embed=embed)
 
     await interaction.response.send_message(
         f"✅ Changelog **{tier}** untuk **{game}** berhasil dikirim ke <#{CHANGELOG_CHANNEL_ID}>.",
