@@ -78,7 +78,7 @@ async def send_ticket_panel(bot: commands.Bot, panel_type="all"):
     if panel_type in ["all", "biasa"]:
         panels.append({
             "channel_id": TICKET_PANEL_CHANNEL_ID,
-            "message_id": 1455913063520932033,
+            "message_id": 1458004446473883732,
             "embed": dc.Embed(title="🎫 Ticket Vora Hub", description=TICKET_BIASA_DESC, color=VORA_BLUE),
             "view": TicketPanelButtons()
         })
@@ -947,4 +947,5 @@ load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 
 client.run(TOKEN)
+
 
