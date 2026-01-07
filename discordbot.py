@@ -399,7 +399,7 @@ class Client(commands.Bot):
         {
             "name": "Ticket Biasa",
             "channel_id": TICKET_PANEL_CHANNEL_ID,
-            "message_id": 1455917081068437667,
+            "message_id": 1458004446473883732,
             "embed": dc.Embed(
                 title="🎫 Ticket Vora Hub",
                 description=TICKET_BIASA_DESC,
@@ -947,5 +947,6 @@ load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 
 client.run(TOKEN)
+
 
 
