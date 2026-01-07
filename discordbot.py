@@ -27,6 +27,7 @@ def save_warns():
 TICKET_PANEL_CHANNEL_ID = 1434769506798010480
 TICKET_LOG_CHANNEL_ID = 1452681875029102624
 STAFF_ROLE_ID = 1434818807368519755
+HELPER_ROLE_ID = 1457350924958695455
 TICKET_CATEGORY_ID = 1434818160577609840
 
 TICKET_PANEL_CHANNEL_ID_X8 = 1443956687433105479
@@ -275,6 +276,7 @@ async def create_ticket(interaction: Interaction, category_name: str):
     category_id = TICKET_CATEGORY_ID_X8 if "x8" in category_name.lower() else TICKET_CATEGORY_ID
     category = guild.get_channel(category_id)
     staff_role = guild.get_role(STAFF_ROLE_ID)
+    helper_role = guild.get_role(HELPER_ROLE_ID)
     channel_name = f"{'x8-' if 'x8' in category_name.lower() else ''}ticket-{ticket_count:04}"
 
     ticket_channel = await guild.create_text_channel(
@@ -304,7 +306,18 @@ async def create_ticket(interaction: Interaction, category_name: str):
     embed.add_field(name="Kategori", value=category_name, inline=False)
     embed.set_footer(text="Vora Hub Ticket System")
 
-    await ticket_channel.send(content=staff_role.mention, embed=embed, view=TicketControlView(is_premium=is_premium))
+    mentions = []
+    if staff_role:
+        mentions.append(staff_role.mention)
+    if helper_role:
+        mentions.append(helper_role.mention)
+
+    await ticket_channel.send(
+        content=" ".join(mentions),
+        embed=embed,
+        view=TicketControlView(is_premium=is_premium)
+    )
+
     await interaction.response.send_message(f"🎫 Ticket kamu sudah dibuat: {ticket_channel.mention}", ephemeral=True)
 
     log = guild.get_channel(TICKET_LOG_CHANNEL_ID)
@@ -934,3 +947,4 @@ load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 
 client.run(TOKEN)
+
