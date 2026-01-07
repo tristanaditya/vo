@@ -188,8 +188,9 @@ class TicketControlView(ui.View):
         user = interaction.user
         guild = interaction.guild
         staff_role = guild.get_role(STAFF_ROLE_ID)
+        helper_role = guild.get_role(HELPER_ROLE_ID)
 
-        if staff_role not in user.roles:
+        if staff_role and helper_role not in user.roles:
             await interaction.response.send_message("❌ Hanya staff yang bisa menutup ticket.", ephemeral=True)
             return False
 
@@ -286,6 +287,7 @@ async def create_ticket(interaction: Interaction, category_name: str):
             guild.default_role: dc.PermissionOverwrite(view_channel=False),
             user: dc.PermissionOverwrite(view_channel=True, send_messages=True),
             staff_role: dc.PermissionOverwrite(view_channel=True, send_messages=True),
+            helper_role: dc.PermissionOverwrite(view_channel=True, send_messages=True)
         }
     )
     add_ticket(user.id, ticket_channel.id)
@@ -947,6 +949,7 @@ load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 
 client.run(TOKEN)
+
 
 
 
